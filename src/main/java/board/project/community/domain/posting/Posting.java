@@ -1,9 +1,13 @@
 package board.project.community.domain.posting;
 
 import board.project.community.domain.Board;
+import board.project.community.domain.Comment;
 import board.project.community.domain.Status;
 import board.project.community.domain.user.User;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
@@ -16,10 +20,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Setter // temp
 @Getter
+@Builder(builderMethodName = "postingBuilder")
+@NoArgsConstructor
+@AllArgsConstructor // Builder 와 NoArgsConstructor 는 같이 쓰이지 못하기 때문에 써줘야한다.
 @Entity
 public class Posting {
 	@Id
@@ -41,10 +51,10 @@ public class Posting {
 	private Status status;
 
 	@Column
-	private LocalDateTime createdDate;
+	private LocalDateTime createdDate = null;
 
 	@Column
-	private LocalDateTime updatedDate;
+	private LocalDateTime updatedDate = null;
 
 	@ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_idx")
@@ -53,4 +63,26 @@ public class Posting {
 	@ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "board_idx")
 	private Board board;
+
+	@OneToMany(mappedBy = "posting")
+	private List<Comment> comments = new ArrayList<>();
+
+	public static PostingBuilder PostingBuilder() {
+		return postingBuilder();
+	}
+
+	public static PostingDTO convertToDTO(Posting posting) {
+		return PostingDTO.postingDTOBuilder()
+				.title(posting.getTitle())
+				.subtitle(posting.getSubtitle())
+				.content(posting.getContent())
+				.status(Status.ACTIVE)
+//				.boardName(posting.getBoard().getName()) // BoardRepository 를 아직 안만듦
+				.boardName("자유 게시판")
+//				.writer(posting.getUser().getNickname()) // UserRepository 를 아직 안만듦
+				.writer("작성자")
+				.createdDate(posting.getCreatedDate())
+				.updatedDate(posting.getUpdatedDate())
+				.build();
+	}
 }

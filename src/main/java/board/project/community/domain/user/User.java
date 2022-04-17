@@ -1,7 +1,5 @@
 package board.project.community.domain.user;
 
-import board.project.community.domain.Status;
-import board.project.community.domain.user.Role;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,9 +10,11 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Setter // temp
 @Getter
+@Table(name = "Users")
 @Entity
 public class User {
 	@Id

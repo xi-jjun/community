@@ -21,8 +21,8 @@ public class PostingRepository {
 		em.persist(posting);
 	}
 
-	public Posting findByIdx(Long idx) {
-		return em.find(Posting.class, idx);
+	public Posting findById(Long id) {
+		return em.find(Posting.class, id);
 	}
 
 	public List<Posting> findAll() {
@@ -31,21 +31,9 @@ public class PostingRepository {
 				.getResultList();
 	}
 
-	public List<Posting> findByTitle(String title) {
-		return em.createQuery("select p from Posting p where p.title = :title", Posting.class)
-				.setParameter("title", title)
-				.getResultList();
-	}
-
-	public List<Posting> findByNickname(String nickname) {
-		return em.createQuery("select p from Posting p where p.user.nickname = :nickname", Posting.class)
-				.setParameter("nickname", nickname)
-				.getResultList();
-	}
-
 	@Transactional
 	public void update(Posting posting) {
-		Posting findPosting = findByIdx(posting.getIdx());
+		Posting findPosting = findById(posting.getId());
 
 		findPosting.setTitle(posting.getTitle());
 		findPosting.setSubtitle(posting.getSubtitle());
@@ -55,14 +43,14 @@ public class PostingRepository {
 	}
 
 	@Transactional
-	public void deactivate(Long idx) {
-		Posting updatePosting = findByIdx(idx);
+	public void deactivate(Long id) {
+		Posting updatePosting = findById(id);
 		updatePosting.setStatus(Status.BLOCKED);
 	}
 
 	@Transactional
-	public void remove(Long idx) {
-		Posting posting = em.find(Posting.class, idx);
+	public void remove(Long id) {
+		Posting posting = em.find(Posting.class, id);
 		em.remove(posting);
 	}
 }

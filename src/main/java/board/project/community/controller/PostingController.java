@@ -70,6 +70,12 @@ public class PostingController {
 		return new ResponseDTO("posting is ok", 200);
 	}
 
+	/**
+	 * 게시글을 작성한 사용자만이 접근 가능.
+	 * @param postingRequestDTO : 수정할 데이터 모음
+	 * @param postingId : 수정할 게시글의 id
+	 * @return : 응답용 반환 객체
+	 */
 	@Transactional
 	@PatchMapping("/{postingId}")
 	public ResponseDTO updatePosting(@RequestBody PostingRequestDTO postingRequestDTO,

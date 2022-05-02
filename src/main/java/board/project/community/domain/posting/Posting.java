@@ -1,8 +1,10 @@
 package board.project.community.domain.posting;
 
-import board.project.community.domain.Board;
+import board.project.community.controller.dto.request.PostingRequestDTO;
+import board.project.community.domain.board.Board;
 import board.project.community.domain.Comment;
 import board.project.community.domain.Status;
+import board.project.community.domain.preference.Preference;
 import board.project.community.domain.user.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,9 +35,9 @@ import java.util.List;
 @Entity
 public class Posting {
 	@Id
-	@Column(name = "posting_idx") // DB column name
+	@Column(name = "posting_id") // DB column name
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long idx;
+	private Long id;
 
 	@Column
 	private String title;
@@ -57,12 +59,15 @@ public class Posting {
 	private LocalDateTime updatedDate = null;
 
 	@ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_idx")
+	@JoinColumn(name = "user_id")
 	private User user;
 
 	@ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "board_idx")
 	private Board board;
+
+	@OneToMany(mappedBy = "posting")
+	private List<Preference> preferences = new ArrayList<>();
 
 	@OneToMany(mappedBy = "posting")
 	private List<Comment> comments = new ArrayList<>();
@@ -71,18 +76,18 @@ public class Posting {
 		return postingBuilder();
 	}
 
-	public static PostingDTO convertToDTO(Posting posting) {
-		return PostingDTO.postingDTOBuilder()
-				.title(posting.getTitle())
-				.subtitle(posting.getSubtitle())
-				.content(posting.getContent())
-				.status(Status.ACTIVE)
-//				.boardName(posting.getBoard().getName()) // BoardRepository 를 아직 안만듦
-				.boardName("자유 게시판")
-//				.writer(posting.getUser().getNickname()) // UserRepository 를 아직 안만듦
-				.writer("작성자")
-				.createdDate(posting.getCreatedDate())
-				.updatedDate(posting.getUpdatedDate())
-				.build();
+	public void update(PostingRequestDTO postingRequestDTO) {
+		this.title = postingRequestDTO.getTitle();
+		this.subtitle = postingRequestDTO.getSubtitle();
+		this.content = postingRequestDTO.getContent();
+		this.updatedDate = LocalDateTime.now();
+	}
+
+	/**
+	 * 관리자 + 게시물 작성자에게만 허락되는 기능.
+	 * @param status : 게시물 상태. ACTIVE, BLOCKED
+	 */
+	public void updateStatus(Status status) {
+		this.status = status;
 	}
 }

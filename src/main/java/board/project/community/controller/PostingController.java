@@ -3,20 +3,15 @@ package board.project.community.controller;
 import board.project.community.controller.dto.request.PostingRequestDTO;
 import board.project.community.controller.dto.response.PostingResponseDetailDTO;
 import board.project.community.controller.dto.response.PostingResponseListDTO;
-import board.project.community.domain.board.Board;
-import board.project.community.domain.posting.Posting;
-import board.project.community.domain.posting.PostingDTO;
-import board.project.community.domain.user.User;
+import board.project.community.domain.Board;
+import board.project.community.domain.Posting;
 import board.project.community.repository.BoardRepository;
 import board.project.community.repository.PostingRepository;
 import board.project.community.repository.UserRepository;
-import board.project.community.service.PostingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,15 +50,15 @@ public class PostingController {
 
 	@PostMapping("")
 	public ResponseDTO posting(@RequestBody PostingRequestDTO postingRequestDTO) {
-		// user 얻고,
+		// board 얻고,
 		String boardName = postingRequestDTO.getBoardName();
 		Board board = boardRepository.findByName(boardName);
 
 		Posting posting = postingRequestDTO.toEntity();
-		posting.setBoard(board);
+		posting.updateBoard(board);
 
 		// session, security 써서 거기서 찾아서 넣어줘야 함.
-		posting.setUser(null);
+		posting.initUser(null);
 
 		postingRepository.save(posting);
 
@@ -75,6 +70,7 @@ public class PostingController {
 	 * @param postingRequestDTO : 수정할 데이터 모음
 	 * @param postingId : 수정할 게시글의 id
 	 * @return : 응답용 반환 객체
+	 * + service layer 구현 때 controller 에서 transaction 을 수행하는 것이 아닌, service layer 에서 update 수행하도록 변경 예정
 	 */
 	@Transactional
 	@PatchMapping("/{postingId}")
@@ -90,7 +86,7 @@ public class PostingController {
 		 */
 		String substitutionBoardName = postingRequestDTO.getBoardName();
 		Board substitutionBoard = boardRepository.findByName(substitutionBoardName);
-		findPosting.setBoard(substitutionBoard);
+		findPosting.updateBoard(substitutionBoard);
 
 		return new ResponseDTO("good", 200);
 	}

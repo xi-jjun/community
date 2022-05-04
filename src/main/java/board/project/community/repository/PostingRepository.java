@@ -1,6 +1,6 @@
 package board.project.community.repository;
 
-import board.project.community.domain.posting.Posting;
+import board.project.community.domain.Posting;
 import board.project.community.domain.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -32,20 +32,9 @@ public class PostingRepository {
 	}
 
 	@Transactional
-	public void update(Posting posting) {
-		Posting findPosting = findById(posting.getId());
-
-		findPosting.setTitle(posting.getTitle());
-		findPosting.setSubtitle(posting.getSubtitle());
-		findPosting.setContent(posting.getContent());
-		findPosting.setStatus(posting.getStatus());
-		findPosting.setUpdatedDate(LocalDateTime.now());
-	}
-
-	@Transactional
 	public void deactivate(Long id) {
 		Posting updatePosting = findById(id);
-		updatePosting.setStatus(Status.BLOCKED);
+		updatePosting.updateStatus(Status.BLOCKED);
 	}
 
 	@Transactional

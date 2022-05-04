@@ -1,10 +1,10 @@
 package board.project.community.repository;
 
+import board.project.community.controller.dto.request.BoardRequestCreateDTO;
 import board.project.community.controller.dto.request.PostingRequestDTO;
 import board.project.community.domain.Status;
-import board.project.community.domain.board.Board;
-import board.project.community.domain.posting.Posting;
-import board.project.community.domain.posting.PostingDTO;
+import board.project.community.domain.Board;
+import board.project.community.domain.Posting;
 import board.project.community.domain.user.Role;
 import board.project.community.domain.user.User;
 import org.junit.jupiter.api.Test;
@@ -36,7 +36,9 @@ class PostingRepositoryTest {
 	@Test
 	void save() {
 		// given
-		Board board = new Board("자유게시판", Status.ACTIVE);
+		BoardRequestCreateDTO dto = new BoardRequestCreateDTO();
+		dto.setBoardName("자유게시판");
+		Board board = dto.toEntity();
 		boardRepository.addBoard(board);
 
 		User user = User.UserBuilder()
@@ -82,8 +84,15 @@ class PostingRepositoryTest {
 	@Test
 	void update() {
 		// given
-		Board board = new Board("자유게시판", Status.ACTIVE);
+		BoardRequestCreateDTO dto = new BoardRequestCreateDTO();
+		dto.setBoardName("자유게시판");
+		Board board = dto.toEntity();
 		boardRepository.addBoard(board);
+
+		BoardRequestCreateDTO dto2 = new BoardRequestCreateDTO();
+		dto2.setBoardName("정보게시판");
+		Board board2 = dto2.toEntity();
+		boardRepository.addBoard(board2);
 
 		final String nickname = "공돌이는 공돌공돌해";
 		User user = User.UserBuilder()
@@ -118,15 +127,17 @@ class PostingRepositoryTest {
 		final Long toBeUpdatePostingId = postingId;
 
 		// update data
-		final String changedBoardName = "정보게시판";
+		final String CHANGED_BOARD_NAME = "정보게시판";
 		PostingRequestDTO postingRequestDTO = PostingRequestDTO.postingRequestBuilder()
-				.boardName(changedBoardName)
+				.boardName(CHANGED_BOARD_NAME)
 				.title("수정할 제목")
 				.subtitle("수정한 부제목")
 				.content("내용도 수정했따. 글을 수정했다.")
 				.build();
 
 		Posting toBeUpdatePosting = postingRepository.findById(toBeUpdatePostingId);
+		Board changedBoard = boardRepository.findByName(CHANGED_BOARD_NAME);
+		toBeUpdatePosting.updateBoard(changedBoard); // Board 를 바꿔준다.
 		toBeUpdatePosting.update(postingRequestDTO);
 
 		em.flush();
@@ -138,7 +149,7 @@ class PostingRepositoryTest {
 		Posting updatedPosting = postingRepository.findById(postingId);
 		assertEquals(toBeUpdatePosting.getId(), updatedPosting.getId());
 		assertEquals(toBeUpdatePosting.getTitle(), updatedPosting.getTitle());
-		assertEquals(toBeUpdatePosting.getBoard().getName(), updatedPosting.getBoard().getName());
+		assertEquals(CHANGED_BOARD_NAME, updatedPosting.getBoard().getName());
 		assertEquals(toBeUpdatePosting.getSubtitle(), updatedPosting.getSubtitle());
 		assertEquals(toBeUpdatePosting.getContent(), updatedPosting.getContent());
 		assertEquals(nickname, updatedPosting.getUser().getNickname());
@@ -151,7 +162,9 @@ class PostingRepositoryTest {
 	@Test
 	void remove() {
 		// given
-		Board board = new Board("자유게시판", Status.ACTIVE);
+		BoardRequestCreateDTO dto = new BoardRequestCreateDTO();
+		dto.setBoardName("자유게시판");
+		Board board = dto.toEntity();
 		boardRepository.addBoard(board);
 
 		final String nickname = "공돌이는 공돌공돌해";

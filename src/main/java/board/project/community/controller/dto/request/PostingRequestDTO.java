@@ -1,7 +1,7 @@
 package board.project.community.controller.dto.request;
 
 import board.project.community.domain.Status;
-import board.project.community.domain.posting.Posting;
+import board.project.community.domain.Posting;
 import lombok.Builder;
 import lombok.Data;
 

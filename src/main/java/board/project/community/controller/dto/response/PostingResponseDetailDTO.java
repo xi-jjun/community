@@ -1,7 +1,7 @@
 package board.project.community.controller.dto.response;
 
 import board.project.community.domain.Comment;
-import board.project.community.domain.posting.Posting;
+import board.project.community.domain.Posting;
 import lombok.Data;
 
 import java.time.LocalDateTime;

@@ -1,9 +1,6 @@
-package board.project.community.domain.posting;
+package board.project.community.domain;
 
 import board.project.community.controller.dto.request.PostingRequestDTO;
-import board.project.community.domain.board.Board;
-import board.project.community.domain.Comment;
-import board.project.community.domain.Status;
 import board.project.community.domain.preference.Preference;
 import board.project.community.domain.user.User;
 import lombok.AllArgsConstructor;
@@ -27,7 +24,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Setter // temp
 @Getter
 @Builder(builderMethodName = "postingBuilder")
 @NoArgsConstructor
@@ -63,7 +59,7 @@ public class Posting {
 	private User user;
 
 	@ManyToOne(targetEntity = Board.class, fetch = FetchType.LAZY)
-	@JoinColumn(name = "board_idx")
+	@JoinColumn(name = "board_id")
 	private Board board;
 
 	@OneToMany(mappedBy = "posting")
@@ -89,5 +85,17 @@ public class Posting {
 	 */
 	public void updateStatus(Status status) {
 		this.status = status;
+	}
+
+	public void updateBoard(Board board) {
+		this.board = board;
+	}
+
+	/**
+	 * 게시물에 대해 누가 작성했는지에 관한 method
+	 * @param user : this 게시물 작성한 User 객체
+	 */
+	public void initUser(User user) {
+		this.user = user;
 	}
 }

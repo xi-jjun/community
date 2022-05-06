@@ -2,6 +2,7 @@ package board.project.community.repository;
 
 import board.project.community.controller.dto.request.BoardRequestCreateDTO;
 import board.project.community.controller.dto.request.PostingRequestDTO;
+import board.project.community.controller.dto.request.UserRequestDTO;
 import board.project.community.domain.Status;
 import board.project.community.domain.Board;
 import board.project.community.domain.Posting;
@@ -41,16 +42,17 @@ class PostingRepositoryTest {
 		Board board = dto.toEntity();
 		boardRepository.addBoard(board);
 
-		User user = User.UserBuilder()
-				.account("kimJJ")
-				.name("김재준")
-				.nickname("공돌이는 공돌공돌해")
-				.password("pw1234")
-				.age(26)
-				.role(Role.USER)
-				.createdDate(LocalDateTime.now())
-				.build();
+
+		UserRequestDTO userDto = new UserRequestDTO();
+		userDto.setAccount("kimJJ");
+		userDto.setPassword("pw1234");
+		userDto.setName("김재준");
+		userDto.setNickname("공돌이는 공돌공돌해");
+		userDto.setAge(26);
+		User user = userDto.toEntity();
+
 		userRepository.save(user);
+
 
 		// when
 		Posting posting = Posting.PostingBuilder()
@@ -94,17 +96,17 @@ class PostingRepositoryTest {
 		Board board2 = dto2.toEntity();
 		boardRepository.addBoard(board2);
 
+
 		final String nickname = "공돌이는 공돌공돌해";
-		User user = User.UserBuilder()
-				.account("kimJJ")
-				.name("김재준")
-				.nickname(nickname)
-				.password("pw1234")
-				.age(26)
-				.role(Role.USER)
-				.createdDate(LocalDateTime.now())
-				.build();
+		UserRequestDTO userDto = new UserRequestDTO();
+		userDto.setAccount("kimJJ");
+		userDto.setPassword("pw1234");
+		userDto.setName("김재준");
+		userDto.setNickname(nickname);
+		userDto.setAge(26);
+		User user = userDto.toEntity();
 		userRepository.save(user);
+
 
 		Posting posting = Posting.PostingBuilder()
 				.title("My Title")
@@ -167,17 +169,18 @@ class PostingRepositoryTest {
 		Board board = dto.toEntity();
 		boardRepository.addBoard(board);
 
+
 		final String nickname = "공돌이는 공돌공돌해";
-		User user = User.UserBuilder()
-				.account("kimJJ")
-				.name("김재준")
-				.nickname(nickname)
-				.password("pw1234")
-				.age(26)
-				.role(Role.USER)
-				.createdDate(LocalDateTime.now())
-				.build();
+		UserRequestDTO userDto = new UserRequestDTO();
+		userDto.setAccount("kimJJ");
+		userDto.setPassword("pw1234");
+		userDto.setName("김재준");
+		userDto.setNickname(nickname);
+		userDto.setAge(26);
+		User user = userDto.toEntity();
+
 		userRepository.save(user);
+
 
 		Posting posting = Posting.PostingBuilder()
 				.title("My Title")

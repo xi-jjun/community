@@ -48,20 +48,8 @@ public class UserRepository {
 	}
 
 	@Transactional
-	public void update(User user) {
-		User findUser = findById(user.getId());
-
-		findUser.setNickname(user.getNickname());
-		findUser.setName(user.getName());
-		findUser.setAge(user.getAge());
-		findUser.setAccount(user.getAccount());
-		findUser.setPassword(user.getPassword());
-	}
-
-	@Transactional
 	public void remove(User user) {
-		User findUser = em.find(User.class, user.getId());
-		em.remove(findUser);
+		em.remove(user);
 	}
 }
 

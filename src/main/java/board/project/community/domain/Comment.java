@@ -1,7 +1,9 @@
 package board.project.community.domain;
 
-import board.project.community.domain.posting.Posting;
+import board.project.community.controller.dto.request.CommentRequestCreateDTO;
+import board.project.community.controller.dto.request.CommentRequestUpdateDTO;
 import board.project.community.domain.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -20,11 +22,11 @@ import java.time.LocalDateTime;
 @Entity
 public class Comment {
 	@Id
-	@Column(name = "comment_idx")
+	@Column(name = "comment_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long idx;
+	private Long id;
 
-	@Column
+	@Column(columnDefinition = "TEXT")
 	private String comment;
 
 	@Column
@@ -39,11 +41,37 @@ public class Comment {
 	@Column
 	private LocalDateTime updatedDate;
 
+	@JsonIgnore
 	@ManyToOne(targetEntity = User.class, fetch = FetchType.LAZY)
-	@JoinColumn(name = "user_idx")
+	@JoinColumn(name = "user_id")
 	private User user;
 
+	@JsonIgnore
 	@ManyToOne(targetEntity = Posting.class, fetch = FetchType.LAZY)
-	@JoinColumn(name = "posting_idx")
+	@JoinColumn(name = "posting_id")
 	private Posting posting;
+
+	public Comment(CommentRequestCreateDTO commentRequestCreateDTO) {
+		makeCommentInfo(commentRequestCreateDTO);
+		this.createdDate = LocalDateTime.now();
+	}
+
+	public void initPosting(Posting posting) {
+		this.posting = posting;
+	}
+
+	public void initUser(User user) {
+		this.user = user;
+	}
+
+	public void update(CommentRequestUpdateDTO commentRequestUpdateDTO) {
+		this.comment = commentRequestUpdateDTO.getComment();
+		this.updatedDate = LocalDateTime.now();
+	}
+
+	private void makeCommentInfo(CommentRequestCreateDTO commentRequestCreateDTO) {
+		this.comment = commentRequestCreateDTO.getComment();
+		this.groupIdx = commentRequestCreateDTO.getGroupIdx();
+		this.level = commentRequestCreateDTO.getLevel();
+	}
 }

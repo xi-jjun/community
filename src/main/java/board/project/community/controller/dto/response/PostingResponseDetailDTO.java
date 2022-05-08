@@ -30,8 +30,9 @@ public class PostingResponseDetailDTO {
 		this.content = posting.getContent();
 		this.createdDate = getCreationDate(posting);
 
-//		this.userId = posting.getUser().getId();
-//		this.writer = posting.getUser().getNickname();
+		this.userId = posting.getUser().getId();
+		this.writer = posting.getUser().getNickname();
+		this.comments = posting.getComments();
 	}
 
 	private LocalDateTime getCreationDate(Posting posting) {

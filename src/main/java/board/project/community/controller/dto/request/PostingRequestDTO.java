@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 /**
  * 게시물을 작성할 때 사용자가 보내는 요청 형식
  */
-@Builder(builderMethodName = "postingRequestBuilder")
 @Data
 public class PostingRequestDTO {
 	private String title;
@@ -23,13 +22,6 @@ public class PostingRequestDTO {
 	 * @return : postingRepository 에 저장하기 위한 Posting Entity
 	 */
 	public Posting toEntity() {
-		Posting posting = Posting.PostingBuilder()
-				.title(this.title)
-				.subtitle(this.subtitle)
-				.content(this.content)
-				.status(Status.ACTIVE)
-				.createdDate(LocalDateTime.now())
-				.build();
-		return posting;
+		return new Posting(this);
 	}
 }

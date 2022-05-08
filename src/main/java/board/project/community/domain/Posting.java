@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -25,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Builder(builderMethodName = "postingBuilder")
 @NoArgsConstructor
 @AllArgsConstructor // Builder 와 NoArgsConstructor 는 같이 쓰이지 못하기 때문에 써줘야한다.
 @Entity
@@ -62,14 +62,18 @@ public class Posting {
 	@JoinColumn(name = "board_id")
 	private Board board;
 
-	@OneToMany(mappedBy = "posting")
+	@OneToMany(mappedBy = "posting", cascade = CascadeType.REMOVE)
 	private List<Preference> preferences = new ArrayList<>();
 
-	@OneToMany(mappedBy = "posting")
+	@OneToMany(mappedBy = "posting", cascade = CascadeType.REMOVE)
 	private List<Comment> comments = new ArrayList<>();
 
-	public static PostingBuilder PostingBuilder() {
-		return postingBuilder();
+	public Posting(PostingRequestDTO postingRequestDTO) {
+		this.title = postingRequestDTO.getTitle();
+		this.subtitle = postingRequestDTO.getSubtitle();
+		this.content = postingRequestDTO.getContent();
+		this.status = Status.ACTIVE;
+		this.createdDate = LocalDateTime.now();
 	}
 
 	public void update(PostingRequestDTO postingRequestDTO) {

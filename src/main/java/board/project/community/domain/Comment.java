@@ -69,6 +69,10 @@ public class Comment {
 		this.updatedDate = LocalDateTime.now();
 	}
 
+	public void removeComment(String comment) {
+		this.comment = comment;
+	}
+
 	private void makeCommentInfo(CommentRequestCreateDTO commentRequestCreateDTO) {
 		this.comment = commentRequestCreateDTO.getComment();
 		this.groupIdx = commentRequestCreateDTO.getGroupIdx();

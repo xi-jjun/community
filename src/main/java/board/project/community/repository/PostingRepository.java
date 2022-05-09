@@ -37,9 +37,12 @@ public class PostingRepository {
 		updatePosting.updateStatus(Status.BLOCKED);
 	}
 
+	/**
+	 * 찾는 행위를 service layer 에 위임하자. 이 method 는 '삭제' 만 하는 method 이다.
+	 * @param posting - 삭제할 Posting entity
+	 */
 	@Transactional
-	public void remove(Long id) {
-		Posting posting = em.find(Posting.class, id);
+	public void remove(Posting posting) {
 		em.remove(posting);
 	}
 }

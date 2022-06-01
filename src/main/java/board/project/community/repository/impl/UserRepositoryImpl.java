@@ -1,5 +1,6 @@
 package board.project.community.repository;
 
+import board.project.community.controller.dto.request.UserRequestDTO;
 import board.project.community.domain.user.Role;
 import board.project.community.domain.user.User;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Repository
-public class UserRepository {
+public class UserRepositoryImpl implements UserRepository {
 	private final EntityManager em;
 
 	@Transactional
@@ -20,11 +21,23 @@ public class UserRepository {
 		em.persist(user);
 	}
 
+	@Transactional
+	@Override
+	public void update(UserRequestDTO requestDTO, Long id) {
+		User updateUser = em.find(User.class, id);
+		updateUser.update(requestDTO);
+	}
+
+	@Transactional
+	public void remove(User user) {
+		em.remove(user);
+	}
+
 	public User findById(Long id) {
 		return em.find(User.class, id);
 	}
 
-	public List<User> findAllActiveUsers() {
+	public List<User> findActiveUsers() {
 		return em.createQuery("select u from User u where u.role = :role", User.class)
 				.setParameter("role", Role.USER)
 				.getResultList();
@@ -45,11 +58,6 @@ public class UserRepository {
 	public List<User> findAll() {
 		return em.createQuery("select u from User as u", User.class)
 				.getResultList();
-	}
-
-	@Transactional
-	public void remove(User user) {
-		em.remove(user);
 	}
 }
 

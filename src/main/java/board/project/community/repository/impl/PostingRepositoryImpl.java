@@ -1,7 +1,9 @@
-package board.project.community.repository;
+package board.project.community.repository.impl;
 
+import board.project.community.controller.dto.request.PostingRequestDTO;
 import board.project.community.domain.Posting;
 import board.project.community.domain.Status;
+import board.project.community.repository.PostingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,12 +15,17 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Repository
-public class PostingRepository {
+public class PostingRepositoryImpl implements PostingRepository {
 	private final EntityManager em;
 
 	@Transactional
 	public void save(Posting posting) {
 		em.persist(posting);
+	}
+
+	@Override
+	public void update(PostingRequestDTO requestDTO, Long id) {
+
 	}
 
 	public Posting findById(Long id) {

@@ -11,13 +11,20 @@ import java.time.LocalDateTime;
 @Data
 public class UserResponseDTO {
 	private Long id;
-//	private
+	private String account;
+	private String name;
 	private String nickname;
+	private String role;
+	private int age;
 	private LocalDateTime createdDate;
 
 	public UserResponseDTO(User user) {
 		this.id = user.getId();
+		this.account = user.getAccount();
+		this.name = user.getName();
 		this.nickname = user.getNickname();
+		this.role = user.getRole().name();
+		this.age = user.getAge();
 		this.createdDate = user.getCreatedDate();
 	}
 }

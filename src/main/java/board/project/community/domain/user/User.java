@@ -7,6 +7,7 @@ import board.project.community.domain.preference.Preference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,6 +17,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,15 +34,21 @@ public class User {
 	private Long id;
 
 	@Column
+	@NotNull(message = "account 는 null 일 수 없습니다.")
+	@Size(min = 3, max = 20, message = "account 는 3~20 자 사이여야 합니다.")
 	private String account;
 
 	@Column
+	@NotNull(message = "password 는 null 일 수 없습니다.")
 	private String password;
 
 	@Column
+	@NotNull(message = "name 은 null 이 될 수 없습니다.")
 	private String name;
 
 	@Column
+	@NotNull
+	@Size(min = 1, max = 10, message = "nickname 은 1~10 자 사이여야 합니다.")
 	private String nickname;
 
 	@Column
@@ -52,13 +61,13 @@ public class User {
 	@Enumerated(EnumType.STRING)
 	private Role role;
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
 	private List<Posting> postings = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
 	private List<Comment> comments = new ArrayList<>();
 
-	@OneToMany(mappedBy = "user")
+	@OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
 	private List<Preference> preferenceList = new ArrayList<>();
 
 	/**
@@ -71,8 +80,12 @@ public class User {
 		this.account = userRequestDTO.getAccount();
 		this.password = userRequestDTO.getPassword();
 		this.age = userRequestDTO.getAge();
+		this.role = isNone(userRequestDTO) ? Role.USER : Role.from(userRequestDTO.getRole());
 		this.createdDate = LocalDateTime.now();
-		this.role = Role.USER;
+	}
+
+	private boolean isNone(UserRequestDTO userRequestDTO) {
+		return userRequestDTO.getRole() == null || userRequestDTO.getRole().isBlank();
 	}
 
 	/**

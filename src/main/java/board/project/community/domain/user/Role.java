@@ -1,5 +1,6 @@
 package board.project.community.domain.user;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -11,4 +12,9 @@ public enum Role {
 	BLOCKED("ROLE_BLOCKED");
 
 	private final String role;
+
+	@JsonCreator
+	public static Role from(String role) {
+		return Role.valueOf(role.toUpperCase());
+	}
 }

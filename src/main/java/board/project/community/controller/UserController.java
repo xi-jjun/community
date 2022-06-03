@@ -2,14 +2,11 @@ package board.project.community.controller;
 
 import board.project.community.controller.dto.request.UserRequestDTO;
 import board.project.community.controller.dto.response.PostingResponseListDTO;
-import board.project.community.controller.dto.response.UserResponseAllDTO;
-import board.project.community.controller.dto.response.UserResponseDetailDTO;
-import board.project.community.domain.Posting;
-import board.project.community.domain.user.User;
-import board.project.community.repository.UserRepository;
+import board.project.community.controller.dto.response.UserResponseDTO;
+import board.project.community.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,15 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 @RestController
 public class UserController {
-	private final UserRepository userRepository;
+	private final UserService userService;
 
 	/**
 	 * 관리자만 접근 가능한 모든 사용자 목록 출력.
@@ -36,11 +31,9 @@ public class UserController {
 	 * @return - 전체 사용자 목록 조회
 	 */
 	@GetMapping("")
-	public List<UserResponseAllDTO> users() {
-		List<User> users = userRepository.findAll();
-		return users.stream()
-				.map(UserResponseAllDTO::new)
-				.collect(Collectors.toList());
+	public List<UserResponseDTO> users(Authentication authentication) {
+		List<UserResponseDTO> response = userService.findAllUsers(authentication);
+		return response;
 	}
 
 	/**
@@ -49,10 +42,10 @@ public class UserController {
 	 * @return - 사용자 상세 정보
 	 */
 	@GetMapping("/{userId}")
-	public UserResponseDetailDTO user(@PathVariable("userId") String userId) {
+	public UserResponseDTO user(@PathVariable("userId") String userId) {
 		Long id = Long.parseLong(userId);
-		User user = userRepository.findById(id);
-		return new UserResponseDetailDTO(user);
+		UserResponseDTO response = userService.findUserById(id);
+		return response;
 	}
 
 	/**
@@ -63,11 +56,8 @@ public class UserController {
 	@GetMapping("/{userId}/postings")
 	public List<PostingResponseListDTO> userPostings(@PathVariable("userId") String userId) {
 		Long id = Long.parseLong(userId);
-		User user = userRepository.findById(id);
-		List<Posting> postings = user.getPostings();
-		return postings.stream()
-				.map(PostingResponseListDTO::new)
-				.collect(Collectors.toList());
+		List<PostingResponseListDTO> response = userService.getUserPostings(id);
+		return response;
 	}
 
 	/**
@@ -77,10 +67,8 @@ public class UserController {
 	 */
 	@PostMapping("/sign-up")
 	public ResponseDTO signUp(@RequestBody UserRequestDTO userRequestDTO) {
-		User user = userRequestDTO.toEntity();
-		userRepository.save(user);
-
-		return new ResponseDTO("success to join user", 200);
+		ResponseDTO response = userService.join(userRequestDTO);
+		return response;
 	}
 
 	/**
@@ -89,14 +77,12 @@ public class UserController {
 	 * @param userId - 수정할 회원의 PK
 	 * @return - 응답 객체 반환
 	 */
-	@Transactional
 	@PatchMapping("/{userId}")
 	public ResponseDTO updateUserInfo(@RequestBody UserRequestDTO userRequestDTO,
-									  @PathVariable String userId) {
+									  @PathVariable String userId,
+									  Authentication authentication) {
 		Long id = Long.parseLong(userId);
-		User updateUser = userRepository.findById(id);
-		updateUser.update(userRequestDTO);
-
-		return new ResponseDTO("success to update user info", 200);
+		ResponseDTO response = userService.updateUserInfo(userRequestDTO, id, authentication);
+		return response;
 	}
 }
